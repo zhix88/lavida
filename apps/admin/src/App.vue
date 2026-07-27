@@ -15,7 +15,38 @@ interface CustomerRecord { id:string; name:string; phone:string; gender:'男'|'�
 type ReportStatus = '暂存'|'测评中'|'已完成'
 interface ReportAttachment { name:string; type:string }
 interface AssessmentReport { id:string; customerId:string; customerName:string; questionnaireVersion:string; description:string; sleepQuality:string; energyLevel:string; exerciseFrequency:string; dietStructure:string; primaryNeed:string; historyNote:string; advisorSummary:string; attachments:ReportAttachment[]; crossBorder:boolean; realName:string; realPhone:string; idCard:string; deliveryAddress:string; status:ReportStatus; assessedAt:string }
+// GitHub Pages only serves static files. This embedded seed keeps the public
+// preview interactive without requiring the local Fastify and SQLite service.
+const isStaticPreview = window.location.pathname.startsWith('/lavida/')
+const staticPreviewCases: Case[] = [
+  { id:'C-20260725-001', customer:'\u6797\u82e5\u6eaa', phone:'138****6812', store:'\u4e0a\u6d77\u9759\u5b89\u4f53\u9a8c\u5e97', franchisee:'\u534e\u4e1c\u4f18\u9009', status:'\u5f85\u5ba1\u6838', risk:'\u5efa\u8bae\u6539\u5584', planId:'PLAN202607250001', planVersion:'FV-20260725-A', createdAt:'2026-07-25 09:30', reportStatus:'\u5df2\u89e3\u6790\uff0c\u5f85\u4eba\u5de5\u786e\u8ba4', paid:false, qualityReleased:false, formula:[{ skuCode:'SKU-OMEGA-07', name:'Omega-3', ratio:24, dosage:'2 capsules/day', rationale:'Sleep support', machineParams:'22C / 175rpm', valid:true, stockAvailable:true }], timeline:[{ time:'09:30', title:'\u5ba2\u6237\u63d0\u4ea4\u6d4b\u8bc4', description:'\u9898\u5e93 V1.0 \u4e0e\u68c0\u67e5\u62a5\u544a\u5df2\u63d0\u4ea4' },{ time:'09:35', title:'AI \u5206\u6790\u5b8c\u6210', description:'\u5f85\u4e13\u4e1a\u5ba1\u6838' }] },
+  { id:'C-20260724-018', customer:'\u5468\u4ee5\u5b81', phone:'139****0318', store:'\u676d\u5dde\u897f\u6e56\u4f53\u9a8c\u5e97', franchisee:'\u534e\u4e1c\u4f18\u9009', status:'\u5f85\u8d28\u68c0', risk:'\u5e38\u89c4\u5173\u6ce8', planId:'PLAN202607240018', planVersion:'FV-20260724-B', createdAt:'2026-07-24 13:20', reportStatus:'\u5df2\u786e\u8ba4', paid:true, qualityReleased:false, formula:[{ skuCode:'SKU-Q10-08', name:'CoQ10', ratio:22, dosage:'1 capsule/day', rationale:'Energy support', machineParams:'20C / 155rpm', valid:true, stockAvailable:true }], timeline:[{ time:'13:20', title:'\u8ba2\u5355\u5df2\u652f\u4ed8', description:'\u7b49\u5f85\u8d28\u68c0\u653e\u884c' }] },
+  { id:'C-20260723-006', customer:'\u8c22\u77e5\u590f', phone:'136****0220', store:'\u5317\u4eac\u56fd\u8d38\u4f53\u9a8c\u5e97', franchisee:'\u5317\u65b9\u4f18\u9009', status:'\u8fd0\u8f93\u4e2d', risk:'\u5efa\u8bae\u6539\u5584', planId:'PLAN202607230006', planVersion:'FV-20260723-A', createdAt:'2026-07-23 10:50', reportStatus:'\u5df2\u786e\u8ba4', paid:true, qualityReleased:true, formula:[{ skuCode:'SKU-MG-09', name:'Magnesium', ratio:18, dosage:'1 capsule/day', rationale:'Relaxation support', machineParams:'18C / 140rpm', valid:true, stockAvailable:true }], timeline:[{ time:'10:50', title:'\u65b9\u6848\u5ba1\u6838\u901a\u8fc7', description:'\u4e13\u4e1a\u5ba1\u6838\u5b8c\u6210' },{ time:'16:20', title:'\u5df2\u53d1\u8d27', description:'SF1234567890' }] },
+]
+const staticDashboard = () => ({ cards:[
+  { label:'\u5f85\u5ba1\u6838\u65b9\u6848', value:staticPreviewCases.filter(item=>item.status==='\u5f85\u5ba1\u6838').length },
+  { label:'\u5f85\u751f\u4ea7\u8ba2\u5355', value:staticPreviewCases.filter(item=>item.status==='\u5f85\u751f\u4ea7').length },
+  { label:'\u5f85\u8d28\u68c0\u6279\u6b21', value:staticPreviewCases.filter(item=>item.status==='\u5f85\u8d28\u68c0').length },
+  { label:'\u98ce\u9669\u9884\u8b66', value:3 },
+], messages:[{ id:1, title:'\u65b9\u6848\u5f85\u5ba1\u6838', body:'\u6797\u82e5\u6eaa\u7684\u65b9\u6848\u9700\u8981\u4e13\u4e1a\u5ba1\u6838' }] })
+function staticApi<T>(path:string, init:RequestInit = {}): T {
+  const method = (init.method || 'GET').toUpperCase()
+  if (method==='GET' && path==='/api/cases') return staticPreviewCases as T
+  if (method==='GET' && path==='/api/dashboard') return staticDashboard() as T
+  if (method==='POST' && path==='/api/reports/generate') return { id:`RPT-${Date.now()}`, status:'\u5df2\u5b8c\u6210', generatedAt:new Date().toLocaleString('zh-CN',{hour12:false}) } as T
+  const match = path.match(/^\/api\/cases\/([^/]+)\/(review|pay|fulfill)$/)
+  if (method==='POST' && match) {
+    const item = staticPreviewCases.find(caseItem=>caseItem.id===match[1])
+    if (!item) throw new Error('\u6f14\u793a\u4e1a\u52a1\u5355\u4e0d\u5b58\u5728')
+    if (match[2]==='review') { const payload=init.body ? JSON.parse(String(init.body)) : {}; item.status=payload.approved ? '\u5df2\u751f\u6548' : '\u5f85\u8865\u8d44\u6599'; item.timeline.push({ time:'10:20', title:payload.approved?'\u65b9\u6848\u5ba1\u6838\u901a\u8fc7':'\u5ba1\u6838\u9000\u56de\u8865\u5145', description:payload.comment || '\u516c\u5f00\u6f14\u793a\u6a21\u62df\u64cd\u4f5c' }) }
+    if (match[2]==='pay') { item.paid=true; item.status='\u5f85\u751f\u4ea7'; item.timeline.push({ time:'10:30', title:'\u6a21\u62df\u652f\u4ed8\u6210\u529f', description:'\u7b49\u5f85\u751f\u4ea7' }) }
+    if (match[2]==='fulfill') { const payload=init.body ? JSON.parse(String(init.body)) : {}; const next:Record<string,CaseStatus>={produce:'\u751f\u4ea7\u4e2d',quality:'\u5f85\u53d1\u8d27',ship:'\u8fd0\u8f93\u4e2d',sign:'\u5df2\u7b7e\u6536'}; if(payload.action==='quality') item.qualityReleased=true; if(next[payload.action]) item.status=next[payload.action]; item.timeline.push({ time:'11:00', title:'\u5c65\u7ea6\u8282\u70b9\u5df2\u63a8\u8fdb', description:'\u516c\u5f00\u6f14\u793a\u6a21\u62df\u64cd\u4f5c' }) }
+    return item as T
+  }
+  return {} as T
+}
 const api = async <T,>(path:string, init:RequestInit = {}, role = currentRole.value) => {
+  if (isStaticPreview) return staticApi<T>(path, init)
   const r = await fetch(path, { ...init, headers: { 'content-type':'application/json', authorization:`Bearer ${role}`, ...(init.headers||{}) } })
   const json = await r.json(); if (!r.ok) throw new Error(json.message || '操作失败'); return json.data as T
 }
