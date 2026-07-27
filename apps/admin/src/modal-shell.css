@@ -1,0 +1,9 @@
+/* 全局弹窗统一为固定标题栏与固定操作栏，内容区域独立滚动。 */
+.modal-mask .modal{width:min(800px,92vw)!important;height:min(720px,90vh);max-height:none;overflow:auto;padding:0}
+.modal-mask .modal>h2{position:sticky;top:0;z-index:3;margin:0;padding:22px 58px 18px 25px;border-bottom:1px solid #edf0f4;background:#fff}
+.modal-mask .modal>.close{position:sticky;top:16px;z-index:4;float:right;margin:16px 18px -48px 0}
+.modal-mask .modal>p{display:none}
+.modal-mask .modal>.form-grid,.modal-mask .modal>.report-section,.modal-mask .modal>input,.modal-mask .modal>select,.modal-mask .modal>textarea{margin-left:25px;margin-right:25px}
+.modal-mask .modal>.form-grid{margin-top:14px;margin-bottom:18px}
+.modal-mask .modal>.report-section{padding-right:0}
+.modal-mask .modal>footer{position:sticky!important;bottom:0!important;z-index:3;margin:18px 0 0!important;padding:14px 25px!important;border-top:1px solid #edf0f4;background:#fff}

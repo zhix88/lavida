@@ -1,0 +1,10 @@
+{
+  "name": "lavida-demo-suite",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @lavida/api --filter @lavida/admin --filter @lavida/mini dev",
+    "build": "pnpm -r build",
+    "test": "pnpm --filter @lavida/api test"
+  }
+}

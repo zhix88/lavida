@@ -1,0 +1,3 @@
+import { buildServer } from './server.js'
+const app = buildServer()
+app.listen({ port: 3001, host: '127.0.0.1' })

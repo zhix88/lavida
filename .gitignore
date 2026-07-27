@@ -1,0 +1,11 @@
+node_modules/
+.npm-cache/
+.pnpm-store/
+dist/
+*.log
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.tsbuildinfo
+.DS_Store
