@@ -20,16 +20,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: npm ci --ignore-scripts
+        working-directory: apps/admin
       - name: Build admin preview
-        run: pnpm --filter @lavida/admin build
+        run: npm run build
+        working-directory: apps/admin
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
